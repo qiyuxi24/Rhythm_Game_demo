@@ -41,7 +41,7 @@
 
     NOJ_Solution/
     ├── beatmap/                 # 谱面资源目录
-    │   └── 曲目名称/
+    │   └── 曲目编号/
     │       ├── background.jpg   # 背景图片
     │       ├── music.ogg        # 背景音乐
     │       └── chart.mc         # 谱面文件

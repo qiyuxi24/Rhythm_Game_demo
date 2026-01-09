@@ -32,7 +32,7 @@ namespace FileManager {
     public:
         // 构造函数
         Beatmap();
-        explicit Beatmap(const std::string& chart_path);
+        explicit Beatmap(const std::string& song_id);
 
         // 加载谱面文件
         void load(const std::string& chart_path);

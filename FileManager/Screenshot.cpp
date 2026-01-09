@@ -3,15 +3,17 @@
 //
 
 #include "Screenshot.h"
+#include "FileManager.h"
 #include <filesystem>
 
 namespace FileManager {
     // 从 RenderTexture 保存截图
     void Screenshot::save(const sf::RenderTexture& render_texture, const std::string& filename) {
-        // 确保 screenshot 目录存在
-        std::filesystem::create_directories("screenshot");
+        // 构建完整路径
+        std::filesystem::path screenshot_dir = std::filesystem::path(getExecutablePath()) / "screenshot";
+        std::filesystem::create_directories(screenshot_dir);
 
-        std::filesystem::path screenshot_path = std::filesystem::path("screenshot") / filename;
+        std::filesystem::path screenshot_path = screenshot_dir / filename;
 
         // 从 RenderTexture 获取图像并保存
         sf::Image image = render_texture.getTexture().copyToImage();
@@ -22,10 +24,11 @@ namespace FileManager {
 
     // 从窗口保存截图
     void Screenshot::save(const sf::RenderWindow& window, const std::string& filename) {
-        // 确保 screenshot 目录存在
-        std::filesystem::create_directories("screenshot");
+        // 构建完整路径
+        std::filesystem::path screenshot_dir = std::filesystem::path(getExecutablePath()) / "screenshot";
+        std::filesystem::create_directories(screenshot_dir);
 
-        std::filesystem::path screenshot_path = std::filesystem::path("screenshot") / filename;
+        std::filesystem::path screenshot_path = screenshot_dir / filename;
 
         // 创建纹理并复制窗口内容
         sf::Vector2u window_size = window.getSize();
@@ -41,7 +44,7 @@ namespace FileManager {
 
     // 获取截图保存路径
     std::string Screenshot::getScreenshotPath(const std::string& filename) {
-        std::filesystem::path screenshot_path = std::filesystem::path("screenshot") / filename;
+        std::filesystem::path screenshot_path = std::filesystem::path(getExecutablePath()) / "screenshot" / filename;
         return screenshot_path.string();
     }
 } // namespace FileManager

@@ -3,6 +3,7 @@
 //
 
 #include "User.h"
+#include "FileManager.h"
 #include <filesystem>
 #include <functional>
 #include <sstream>
@@ -32,7 +33,8 @@ namespace FileManager {
     void User::load(const std::string& username) {
         this->username = username;
 
-        std::filesystem::path user_dir = std::filesystem::path("users") / username;
+        // 构建完整路径
+        std::filesystem::path user_dir = std::filesystem::path(getExecutablePath()) / "users" / username;
         std::filesystem::path user_file = user_dir / "user.data";
 
         // 检查文件是否存在
@@ -55,7 +57,8 @@ namespace FileManager {
             throw UserException("No username specified");
         }
 
-        std::filesystem::path user_dir = std::filesystem::path("users") / save_username;
+        // 构建完整路径
+        std::filesystem::path user_dir = std::filesystem::path(getExecutablePath()) / "users" / save_username;
         std::filesystem::path user_file = user_dir / "user.data";
 
         // 确保目录存在
@@ -72,7 +75,8 @@ namespace FileManager {
             throw UserException("Username cannot be empty");
         }
 
-        std::filesystem::path user_dir = std::filesystem::path("users") / username;
+        // 构建完整路径
+        std::filesystem::path user_dir = std::filesystem::path(getExecutablePath()) / "users" / username;
         std::filesystem::path user_file = user_dir / "user.data";
 
         // 检查用户是否已存在

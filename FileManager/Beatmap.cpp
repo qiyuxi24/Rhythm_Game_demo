@@ -3,6 +3,7 @@
 //
 
 #include "Beatmap.h"
+#include "FileManager.h"
 #include <filesystem>
 #include <algorithm>
 
@@ -11,16 +12,18 @@ namespace FileManager {
     Beatmap::Beatmap() : beatmap_data(nlohmann::json::object()), file_path("") {
     }
 
-    Beatmap::Beatmap(const std::string& chart_path) : beatmap_data(nlohmann::json::object()), file_path("") {
-        load(chart_path);
+    Beatmap::Beatmap(const std::string& song_id) : beatmap_data(nlohmann::json::object()), file_path("") {
+        load(song_id);
     }
 
     // 加载谱面文件
-    void Beatmap::load(const std::string& chart_path) {
-        this->file_path = chart_path;
+    void Beatmap::load(const std::string& song_id) {
+        // song_id 是曲目编号，构建完整路径
+        std::filesystem::path full_path = std::filesystem::path(getExecutablePath()) / "beatmap" / song_id / "chart.mc";
+        this->file_path = full_path.string();
 
         // 使用 JsonParser 解析文件
-        beatmap_data = Tools::JsonParser::parseFromFile(chart_path);
+        beatmap_data = Tools::JsonParser::parseFromFile(this->file_path);
 
         // 验证谱面格式
         validateFormat();
@@ -93,8 +96,8 @@ namespace FileManager {
         const auto& meta = beatmap_data.at("meta");
         std::string bg_filename = meta.value("background", "background.jpg");
 
-        // 构建完整路径
-        std::filesystem::path dir_path(beatmap_dir);
+        // beatmap_dir 是曲目编号，构建完整路径
+        std::filesystem::path dir_path = std::filesystem::path(getExecutablePath()) / "beatmap" / beatmap_dir;
         std::filesystem::path bg_path = dir_path / bg_filename;
 
         return bg_path.string();
@@ -110,8 +113,8 @@ namespace FileManager {
         const auto& song = meta.at("song");
         std::string music_filename = song.at("file").get<std::string>();
 
-        // 构建完整路径
-        std::filesystem::path dir_path(beatmap_dir);
+        // beatmap_dir 是曲目编号，构建完整路径
+        std::filesystem::path dir_path = std::filesystem::path(getExecutablePath()) / "beatmap" / beatmap_dir;
         std::filesystem::path music_path = dir_path / music_filename;
 
         return music_path.string();

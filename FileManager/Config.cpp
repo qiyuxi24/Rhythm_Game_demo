@@ -3,6 +3,7 @@
 //
 
 #include "Config.h"
+#include "FileManager.h"
 #include <filesystem>
 
 namespace FileManager {
@@ -16,12 +17,19 @@ namespace FileManager {
 
     // 加载配置
     void Config::load(const std::string& config_path) {
-        this->config_path = config_path;
+        // 如果使用默认值，构建完整路径
+        std::string full_path;
+        if (config_path == "config.data" || config_path.empty()) {
+            full_path = (std::filesystem::path(getExecutablePath()) / "config.data").string();
+        } else {
+            full_path = config_path;
+        }
+        this->config_path = full_path;
 
         // 检查文件是否存在
-        if (std::filesystem::exists(config_path)) {
+        if (std::filesystem::exists(full_path)) {
             // 使用 JsonParser 解析文件
-            config_data = Tools::JsonParser::parseFromFile(config_path);
+            config_data = Tools::JsonParser::parseFromFile(full_path);
         } else {
             // 文件不存在，创建默认配置
             config_data = nlohmann::json::object();
@@ -30,10 +38,12 @@ namespace FileManager {
 
     // 保存配置
     void Config::save(const std::string& config_path) {
-        std::string save_path = config_path.empty() ? this->config_path : config_path;
-
-        if (save_path.empty()) {
-            throw ConfigException("No config path specified");
+        std::string save_path;
+        if (config_path.empty()) {
+            // 使用默认路径
+            save_path = (std::filesystem::path(getExecutablePath()) / "config.data").string();
+        } else {
+            save_path = config_path;
         }
 
         // 确保目录存在

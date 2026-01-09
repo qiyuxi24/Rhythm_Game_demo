@@ -3,12 +3,13 @@
 //
 
 #include "Logger.h"
+#include "FileManager.h"
 #include <filesystem>
 #include <iostream>
 
 namespace FileManager {
     // 静态成员初始化
-    std::string Logger::log_file_path = "logs/app.log";
+    std::string Logger::log_file_path = "";
     std::mutex Logger::log_mutex;
     std::ofstream Logger::log_file;
 
@@ -25,6 +26,11 @@ namespace FileManager {
     // 写入日志
     void Logger::writeLog(LogLevel level, const std::string& message) {
         std::lock_guard<std::mutex> lock(log_mutex);
+
+        // 如果路径未设置，使用默认路径
+        if (log_file_path.empty()) {
+            log_file_path = (std::filesystem::path(getExecutablePath()) / "logs" / "app.log").string();
+        }
 
         // 确保 logs 目录存在
         std::filesystem::path log_path_obj(log_file_path);
@@ -63,7 +69,12 @@ namespace FileManager {
             log_file.close();
         }
 
-        log_file_path = log_path;
+        // 如果为空，使用默认路径
+        if (log_path.empty()) {
+            log_file_path = (std::filesystem::path(getExecutablePath()) / "logs" / "app.log").string();
+        } else {
+            log_file_path = log_path;
+        }
     }
 
     // 记录信息日志
